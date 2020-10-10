@@ -10,7 +10,7 @@ README = (HERE / "README.md").read_text()
 # This call to setup() does all the work
 setup(
     name="pyshine",
-    version="0.0.1",
+    version="0.0.2",
     description="This library contains various Audio and Video Signal Processing utilities",
     long_description=README,
     long_description_content_type="text/markdown",
