@@ -19,6 +19,7 @@ To upgrade to the newest version
 
 ### pyshine.putBText()
 putBText(): Put Background Box with Text
+```
 Inputs:
 img: cv2 image img
 text_offset_x, text_offset_x: X,Y location of text start
@@ -34,7 +35,7 @@ gamma: 0 by default
 
 Output:
 img: CV2 image with text and background
-
+```
 ### usage
 ```python3
 import pyshine as ps
@@ -42,10 +43,9 @@ import cv2
 image = cv2.imread('lena.jpg')
 text  =  'HELLO WORLD!'
 image =  ps.putBText(image,text,text_offset_x=20,text_offset_y=20,vspace=10,hspace=10, font_scale=1.0,background_RGB=(228,225,222),text_RGB=(1,1,1))
-```
 cv2.imshow('Output', image)
 cv2.waitKey(0)
-
+```
 ## License
 
 © 2020 PyShine
