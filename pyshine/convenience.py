@@ -8,7 +8,8 @@ import socket,time
 import queue
 import sounddevice as sd
 import threading
-
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 
 
 def putBText(img,text,text_offset_x=20,text_offset_y=20,vspace=10,hspace=10, font_scale=1.0,background_RGB=(228,225,222),text_RGB=(1,1,1),font = cv2.FONT_HERSHEY_DUPLEX,thickness = 2,alpha=0.6,gamma=0):
@@ -73,6 +74,54 @@ def audioCapture(mode='send'):
 	thread = threading.Thread(target=getAudio, args=())
 	thread.start()
 	return audio
+
+
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+
+
+def showPlot(name,audio,xmin=0,ymin=-0.5,xmax=1024,ymax=0.5):
+	
+	# Get the Figure
+	fig = plt.figure(figsize=(8,3))
+	ax = fig.add_subplot(1,1,1)
+	ax.set_facecolor((0,0,0)) 
+	fig.tight_layout() 
+	ax.yaxis.grid(True)
+
+
+	def animate(i):
+		
+		try:
+			ax.clear()
+			ys = []
+			ys = audio.get()
+			
+			T= ys.shape[0]
+			ys = ys[0:T//1]
+			X_m = ys
+			ax.plot(X_m, '.', color = (0.25,1,0))
+			ax.set_ylim( ymin=ymin, ymax=ymax)	
+			ax.set_xlim( xmin=xmin, xmax=xmax)	
+			ax.set_title(name)		
+		except Exception as e:
+			try:
+				ax.set_ylim( ymin=ymin, ymax=ymax)	
+				ax.set_xlim( xmin=xmin, xmax=xmax)	
+				ax.set_title(name)		
+
+			except:
+				pass
+			pass
+			print(e)
+			
+	# Lets call the animation function 	
+	ani = animation.FuncAnimation(fig, animate, interval=30)
+	plt.ion()
+	plt.show()
+	plt.pause(0.001)
+
+
 
 
 # TEXT examples

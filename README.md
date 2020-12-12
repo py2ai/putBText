@@ -66,6 +66,31 @@ audio=audioCapture(mode)
 
 ```
 
+### pyshine.showPlot()
+showPlot(): Plots the live data 
+```
+Inputs:
+name: 'Tile of the plot'
+audio: audio data obtained 
+xmin: default 0 along the x axis
+ymin: default -0.5 along the x axis
+xmax: default 1024 along the y axis
+ymax: default 0.5 along the y axis
+
+Output:
+show the plot()
+```
+### usage
+```python3
+import pyshine as ps
+mode =  'send'
+audio=ps.audioCapture(mode)
+name =  'Name'
+showPlot(name,audio,xmin=0,ymin=-0.5,xmax=1024,ymax=0.5)
+
+
+```
+
 
 
 

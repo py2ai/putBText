@@ -10,11 +10,11 @@ README = (HERE / "README.md").read_text()
 # This call to setup() does all the work
 setup(
     name="pyshine",
-    version="0.0.4",
+    version="0.0.5",
     description="This library contains various Audio and Video Signal Processing utilities",
     long_description=README,
     long_description_content_type="text/markdown",
-    url="https://github.com/py2ai/audioCapture",
+    url="https://github.com/py2ai/audioCapture.git",
     author="PyShine",
     author_email="python2ai@gmail.com",
     license="MIT",
@@ -26,7 +26,7 @@ setup(
     ],
     packages=["pyshine"],
     include_package_data=True,
-    install_requires=['numpy','sounddevice'],
+    install_requires=['numpy','sounddevice','matplotlib'],
     entry_points={
         "console_scripts": [
 
