@@ -4,6 +4,13 @@
 # import the necessary packages
 import numpy as np
 import cv2
+import socket,time
+import queue
+import sounddevice as sd
+import threading
+
+
+
 def putBText(img,text,text_offset_x=20,text_offset_y=20,vspace=10,hspace=10, font_scale=1.0,background_RGB=(228,225,222),text_RGB=(1,1,1),font = cv2.FONT_HERSHEY_DUPLEX,thickness = 2,alpha=0.6,gamma=0):
 	"""
     Inputs:
@@ -37,6 +44,35 @@ def putBText(img,text,text_offset_x=20,text_offset_y=20,vspace=10,hspace=10, fon
 
 	cv2.putText(img, text, (x, (y+h)), font, fontScale=font_scale, color=(text_B,text_G,text_R ), thickness=thickness)
 	return img
+
+
+def audioCapture(mode='send'):
+
+	frame = [0]
+	audio = queue.Queue(maxsize=20)
+	def getAudio():
+		def callback(indata, outdata, frames, time, status):
+			
+			if status:
+				print(status)
+
+			if mode=='get':
+				try:
+					frame = audio.get()
+					outdata[:] = frame
+					
+				except queue.Empty as e:
+					pass
+			else:
+				audio.put(indata)
+			
+		with sd.Stream( channels=2,blocksize=1024, callback=callback):
+			input()
+			exit()
+			
+	thread = threading.Thread(target=getAudio, args=())
+	thread.start()
+	return audio
 
 
 # TEXT examples

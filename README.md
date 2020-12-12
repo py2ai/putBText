@@ -46,6 +46,38 @@ image =  ps.putBText(image,text,text_offset_x=20,text_offset_y=20,vspace=10,hspa
 cv2.imshow('Output', image)
 cv2.waitKey(0)
 ```
+
+
+
+### pyshine.audioCapture()
+audioCapture(): Send or Get the Audio from pc Microphone
+```
+Inputs:
+mode: 'send' to send the audio chunk data or 'get' to receive the audio data
+
+Output:
+audio: Audio data, which can be accessed using audio.get() or send using audio.put()
+```
+### usage
+```python3
+import pyshine as ps
+mode =  'send'
+audio=audioCapture(mode)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## License
 
 © 2020 PyShine
