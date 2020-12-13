@@ -8,9 +8,14 @@ import socket,time
 import queue
 import sounddevice as sd
 import threading
+import matplotlib
+import copy
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-
+from matplotlib.animation import FuncAnimation
+import _thread
+from multiprocessing import Process
+from collections import deque
 
 def putBText(img,text,text_offset_x=20,text_offset_y=20,vspace=10,hspace=10, font_scale=1.0,background_RGB=(228,225,222),text_RGB=(1,1,1),font = cv2.FONT_HERSHEY_DUPLEX,thickness = 2,alpha=0.6,gamma=0):
 	"""
@@ -47,8 +52,9 @@ def putBText(img,text,text_offset_x=20,text_offset_y=20,vspace=10,hspace=10, fon
 	return img
 
 
-def audioCapture(mode='send'):
 
+def audioCapture(mode='send'):
+	q = deque(maxlen=20)
 	frame = [0]
 	audio = queue.Queue(maxsize=20)
 	def getAudio():
@@ -61,11 +67,13 @@ def audioCapture(mode='send'):
 				try:
 					frame = audio.get()
 					outdata[:] = frame
+					q.append(frame)
 					
-				except queue.Empty as e:
+				except :
 					pass
 			else:
 				audio.put(indata)
+				q.append(indata)
 			
 		with sd.Stream( channels=2,blocksize=1024, callback=callback):
 			input()
@@ -73,15 +81,80 @@ def audioCapture(mode='send'):
 			
 	thread = threading.Thread(target=getAudio, args=())
 	thread.start()
-	return audio
+	return audio,q
 
 
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
 
 
-def showPlot(name,audio,xmin=0,ymin=-0.5,xmax=1024,ymax=0.5):
+
+
+
+
+def showPlot(audio,name='pyshine.com',length=8,xmin=0,ymin=-0.5,xmax=8*1024,ymax=0.5,color = (0,1,0.29)):
+	def getAudio():
 	
+		global plotdata
+		frame = [0]
+		length=8
+		fig,ax = plt.subplots(figsize=(8,2))
+		ax.set_title('naem')
+		plotdata =  np.zeros((length*1024,2))
+		lines = ax.plot(plotdata,color = color)
+			
+
+		ax.set_facecolor((0,0,0))
+		ax.set_ylim( ymin=ymin, ymax=ymax)	
+		ax.set_xlim( xmin=xmin, xmax=xmax)	
+
+
+		def animate(i):
+			global plotdata
+			try:
+
+				ys = []
+				
+				ys = audio.pop()
+				data = ys
+				shift = len(data)
+				plotdata = np.roll(plotdata, -shift,axis = 0)
+				plotdata[-shift:,:] = data
+
+				
+				T= ys.shape[0]
+				ys = ys[0:T//1]
+				X_m = ys
+
+				ax.set_title(name)		
+			except Exception as e:
+				try:
+
+					ax.set_title(name)		
+
+				except:
+					pass
+				pass
+				
+			for column, line in enumerate(lines):
+				line.set_ydata(plotdata[:,column])
+			return lines
+		
+		ani  = FuncAnimation(fig,animate, interval=30)
+		while True:
+			plt.ion()
+			plt.show()
+			plt.pause(0.001)	
+
+	thread = threading.Thread(target=getAudio, args=())
+	thread.start()
+
+			
+
+
+
+
+
+def _showPlot(audio,xmin=0,ymin=-0.5,xmax=1024,ymax=0.5):
+	name='name'
 	# Get the Figure
 	fig = plt.figure(figsize=(8,3))
 	ax = fig.add_subplot(1,1,1)
@@ -96,7 +169,7 @@ def showPlot(name,audio,xmin=0,ymin=-0.5,xmax=1024,ymax=0.5):
 			ax.clear()
 			ys = []
 			ys = audio.get()
-			
+			audio.task_done()
 			T= ys.shape[0]
 			ys = ys[0:T//1]
 			X_m = ys
@@ -120,6 +193,7 @@ def showPlot(name,audio,xmin=0,ymin=-0.5,xmax=1024,ymax=0.5):
 	plt.ion()
 	plt.show()
 	plt.pause(0.001)
+
 
 
 
