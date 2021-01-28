@@ -16,6 +16,14 @@ from matplotlib.animation import FuncAnimation
 import _thread
 from multiprocessing import Process
 from collections import deque
+import tempfile
+import soundfile as sf
+from keras.models import Sequential
+from keras.layers.convolutional import Conv2D
+from keras.layers.convolutional import MaxPooling2D
+from keras.layers.core import Activation
+from keras.layers.core import Flatten
+from keras.layers.core import Dense
 
 def putBText(img,text,text_offset_x=20,text_offset_y=20,vspace=10,hspace=10, font_scale=1.0,background_RGB=(228,225,222),text_RGB=(1,1,1),font = cv2.FONT_HERSHEY_DUPLEX,thickness = 2,alpha=0.6,gamma=0):
 	"""
@@ -53,8 +61,9 @@ def putBText(img,text,text_offset_x=20,text_offset_y=20,vspace=10,hspace=10, fon
 
 
 
-def audioCapture(mode='send'):
+def audioCapture(mode='send',record=False,filename='recorded',typename='.wav',dirname=''):
 	q = deque(maxlen=20)
+	filename = tempfile.mktemp(prefix=filename,suffix=typename, dir=dirname)
 	frame = [0]
 	audio = queue.Queue(maxsize=20)
 	def getAudio():
@@ -74,10 +83,19 @@ def audioCapture(mode='send'):
 			else:
 				audio.put(indata)
 				q.append(indata)
-			
-		with sd.Stream( channels=2,blocksize=1024, callback=callback):
-			input()
-			exit()
+		if record==True:
+			with sf.SoundFile(filename, mode='x', samplerate=44100,channels=2) as file:	
+				with sd.Stream( channels=2,blocksize=1024, callback=callback):
+					print('press Ctrl+C to stop the recording')
+					
+					file.write(audio.get())
+					# input()
+					# exit()
+		else:
+			with sd.Stream( channels=2,blocksize=1024, callback=callback):
+				input()
+				exit()	
+		
 			
 	thread = threading.Thread(target=getAudio, args=())
 	thread.start()
@@ -196,6 +214,27 @@ def _showPlot(audio,xmin=0,ymin=-0.5,xmax=1024,ymax=0.5):
 
 
 
+
+class RPSNET:
+	
+	def build(width, height, depth, classes):
+		
+		model = Sequential()
+		inputShape = (height, width, depth)
+		model.add(Conv2D(20, (5, 5), padding="same",
+			input_shape=inputShape))
+		model.add(Activation("relu"))
+		model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+		model.add(Conv2D(50, (5, 5), padding="same"))
+		model.add(Activation("relu"))
+		model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+		model.add(Flatten())
+		model.add(Dense(64))
+		model.add(Activation("sigmoid"))
+		model.add(Dense(classes))
+		model.add(Activation("sigmoid"))
+
+		return model
 
 
 # TEXT examples

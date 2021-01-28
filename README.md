@@ -1,4 +1,5 @@
 # pyshine
+
 A collection of simply yet high level utilities for Python.
 
 ## Installation
@@ -18,7 +19,9 @@ To upgrade to the newest version
 
 
 ### pyshine.putBText()
+
 putBText(): Put Background Box with Text
+
 ```
 Inputs:
 img: cv2 image img
@@ -36,7 +39,11 @@ gamma: 0 by default
 Output:
 img: CV2 image with text and background
 ```
+
 ### usage
+
+
+
 ```python3
 import pyshine as ps
 import cv2
@@ -50,7 +57,9 @@ cv2.waitKey(0)
 
 
 ### pyshine.audioCapture()
+
 audioCapture(): Send or Get the Audio from pc Microphone
+
 ```
 Inputs:
 mode: 'send' to send the audio chunk data or 'get' to receive the audio data
@@ -58,7 +67,9 @@ mode: 'send' to send the audio chunk data or 'get' to receive the audio data
 Output:
 audio: Audio data, which can be accessed using audio.get() or send using audio.put()
 ```
+
 ### usage
+
 ```python3
 import pyshine as ps
 mode =  'send'
@@ -67,7 +78,9 @@ audio=audioCapture(mode)
 ```
 
 ### pyshine.showPlot()
+
 showPlot(): Plots the live data 
+
 ```
 Inputs:
 audio: audio data obtained 
@@ -83,7 +96,9 @@ color: Color of the plot (0,1,0.29)
 Output:
 show the plot()
 ```
+
 ### usage
+
 ```python3
 import pyshine as ps
 mode =  'send'
@@ -96,6 +111,42 @@ while True:
 
 
 ```
+
+### pyshine.RPSNET
+
+A CNN model for the Keras library, incorporating Rock, Paper, Scissor learnining Network.
+
+```python
+import pyshine as ps
+from keras.optimizers import Adam
+
+# WIDTH : width of image about 80 pixels
+# HEIGHT : height of image about 80 pixels
+# DEPTH : dimensions of image such as 3
+# NUM_CLASSES : number of classes to classify as output
+model =ps.RPSNET.build(width=WIDTH, height=HEIGHT, depth=DEPTH, classes=NUM_CLASSES)
+```
+
+```python
+INIT_LR = 1e-3
+EPOCHS = 1000
+OPT = Adam(lr=INIT_LR, decay=INIT_LR / EPOCHS)
+model.compile(
+		optimizer=OPT,
+		loss='categorical_crossentropy',
+		metrics=['accuracy']
+		)
+# data: numpy image array containing data samples
+# labels: corresponding labels per data
+model.fit(np.array(data), np.array(labels),epochs=EPOCHS)
+model.save("RPS-model.h5")
+pred = model.predict(np.array([image]))
+
+```
+
+
+
+​		
 
 
 
